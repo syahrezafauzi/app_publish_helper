@@ -485,7 +485,18 @@ class HomePage extends GetView<HomeController> {
                     },
                   ),
                 ],
-              )
+              ),
+              Row(
+                children: [
+                  _button(
+                    tagName(),
+                    loading: ["git"],
+                    onTap: () {
+                      controller.checkoutBranch(tagName());
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ],
