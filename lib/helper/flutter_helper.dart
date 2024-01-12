@@ -17,8 +17,10 @@ class FlutterHelper {
           onError: onError,
         );
 
+  get separator => Platform.isMacOS ? "/" : "\\";   
+
   getVersion(String path) async {
-    var filePath = [path, 'pubspec.yaml'].join("\\");
+    var filePath = [path, 'pubspec.yaml'].join(separator);
     final pubspec = File(filePath).readAsStringSync();
     final parsed = Pubspec.parse(pubspec);
     var version = parsed.version;
@@ -32,7 +34,7 @@ class FlutterHelper {
     int? minor,
     int? patch,
   }) async {
-    var filePath = [path, 'pubspec.yaml'].join("\\");
+    var filePath = [path, 'pubspec.yaml'].join(separator);
     var file = File(filePath);
     final pubspec = file.readAsStringSync();
     final yamlEditor = YamlEditor(pubspec);

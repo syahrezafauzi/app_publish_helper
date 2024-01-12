@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:get/get.dart';
+import 'package:process_run/process_run.dart';
 
 class CmdHelper {
   final Function(String)? onOutput;
@@ -18,12 +19,15 @@ class CmdHelper {
   }) async {
     // debugPrint("command path: $path");
     // debugPrint("command: $command");
-    _outputText(command, silent: silent);
+    _outputText(command, silent: silent, arguments: arguments);
+    var env = ShellEnvironment();
     var process = ProcessCmd(
       command,
       arguments ?? [],
       runInShell: Platform.isWindows,
       workingDirectory: path,
+      environment: env,
+      includeParentEnvironment: true,
     );
     var res = await runCmd(process);
     _output(res, silent: silent);
@@ -33,9 +37,12 @@ class CmdHelper {
     return result;
   }
 
-  void _outputText(String command, {bool silent = false}) {
+  void _outputText(String command,
+      {bool silent = false, List<String>? arguments}) {
     if (!silent) {
-      onOutput?.call(command);
+      var combine = [command]..addAll(arguments ?? []);
+      var output = combine.join(" ");
+      onOutput?.call(output);
     }
   }
 

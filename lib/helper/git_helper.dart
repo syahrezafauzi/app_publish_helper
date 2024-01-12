@@ -19,8 +19,9 @@ class GitHelper {
   getBranch(String path) async {
     String? result = await cmdHelper.executeCommand(
       path,
+      command: "git",
+      arguments: ["rev-parse", "--abbrev-ref", "HEAD"],
       silent: true,
-      command: "git rev-parse --abbrev-ref HEAD",
     );
     return result;
   }
@@ -31,7 +32,8 @@ class GitHelper {
     var fileName = basename(file);
     await cmdHelper.executeCommand(
       path,
-      command: "git checkout HEAD -- $fileName",
+      command: "git",
+      arguments: ["checkout", "HEAD", "--", fileName],
     );
   }
 
@@ -41,61 +43,77 @@ class GitHelper {
     var fileName = basename(file);
     await cmdHelper.executeCommand(
       filePath,
-      command: "git add $fileName",
+      command: "git",
+      arguments: ["add", fileName],
     );
 
     await cmdHelper.executeCommand(
       path,
-      command: "git commit -m '$message'",
+      command: "git",
+      arguments: ["commit", "-m", '$message'],
+      silent: true,
     );
   }
 
   push(path) async {
     await cmdHelper.executeCommand(
       path,
-      command: "git push",
+      command: "git",
+      arguments: ["push"],
     );
   }
 
   tag(path, String tag) async {
     await cmdHelper.executeCommand(
       path,
-      command: "git tag $tag",
+      command: "git",
+      arguments: ["tag", tag],
     );
   }
 
-  pushTag(path, String tag) async {
+  tagPush(path, String tag) async {
     await cmdHelper.executeCommand(
       path,
-      command: "git push origin $tag",
+      command: "git",
+      arguments: ["push", "origin", tag],
     );
   }
 
   Future<String?> getRemoteUrl(path) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git config --get remote.origin.url",
+      command: "git",
+      arguments: ["config", "--get", "remote.origin.url"],
+      silent: true,
     );
   }
 
   pull(path) async {
     await cmdHelper.executeCommand(
       path,
-      command: "git pull",
+      command: "git",
+      arguments: ["pull"],
     );
   }
 
   reset(String path) async {
     await cmdHelper.executeCommand(
       path,
-      command: "git reset --hard @{u}",
+      command: "git",
+      arguments: ["reset", "--hard", "@{u}"],
     );
   }
 
   incoming(String branch, String path) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git rev-list --right-only --count $branch...origin/$branch",
+      command: "git",
+      arguments: [
+        "rev-list",
+        "--right-only",
+        "--count",
+        "$branch...origin/$branch"
+      ],
       silent: true,
     );
   }
@@ -103,7 +121,13 @@ class GitHelper {
   outgoing(String branch, String path) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git rev-list --left-only --count $branch...origin/$branch",
+      command: "git",
+      arguments: [
+        "rev-list",
+        "--left-only",
+        "--count",
+        "$branch...origin/$branch"
+      ],
       silent: true,
     );
   }
@@ -111,24 +135,30 @@ class GitHelper {
   checkout(path, String branch) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git checkout $branch",
-      silent: true,
+      command: "git",
+      arguments: ["checkout", branch],
     );
   }
 
   Future<String?> branchList(String path) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git branch --all --sort=committerdate --format=%(refname:short)",
+      command: "git",
+      arguments: [
+        "branch",
+        "--all",
+        "--sort=committerdate",
+        "--format=%(refname:short)"
+      ],
       silent: true,
     );
   }
 
-  fetch(path) async{
+  fetch(path) async {
     return await cmdHelper.executeCommand(
       path,
-      command: "git fetch",
-      silent: true,
+      command: "git",
+      arguments: ["fetch"],
     );
   }
 }

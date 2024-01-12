@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_updater_flutter/helper/dot_net_helper.dart';
 import 'package:app_updater_flutter/helper/flutter_helper.dart';
 import 'package:app_updater_flutter/helper/git_helper.dart';
@@ -41,11 +43,13 @@ class HomeController extends GetxController {
     {
       "name": "Mobile Patient",
       "path": "D:\\projects\\mtmobile\\mtmobile-patient",
+      "path_macos": "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-patient",
       "lang": "flutter"
     },
     {
       "name": "Mobile Staff",
       "path": "D:\\projects\\mtmobile\\mtmobile-staff",
+      "path_macos": "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
       "lang": "flutter"
     }
   ];
@@ -64,6 +68,9 @@ class HomeController extends GetxController {
 
   var incoming = Rx<int?>(null);
   var outgoing = Rx<int?>(null);
+
+  get path => Platform.isMacOS ? project.value["path_macos"] : project.value["path"];
+  get separator => Platform.isMacOS ? "/" : "\\";
 
   bool isLoading(List<String>? category) {
     return loading.any((element) => category?.contains(element) ?? false);
@@ -119,7 +126,6 @@ class HomeController extends GetxController {
 
   Future<String?> getVersion() async {
     String? version;
-    var path = project.value["path"];
 
     var lang = project.value["lang"];
     if (lang == "flutter") {
@@ -127,7 +133,7 @@ class HomeController extends GetxController {
       version = version?.split("+").firstOrNull;
     } else {
       var csproj = project.value["csproj"];
-      var combine = [path, csproj].join("\\");
+      var combine = [path, csproj].join(separator);
       version = await dotNetHelper.getVersion(combine);
     }
 
@@ -140,7 +146,6 @@ class HomeController extends GetxController {
         loading: ["git"],
         task: () async {
           this.branch.value = "[branch]";
-          var path = project.value["path"];
           var branch = await gitHelper.getBranch(path);
           this.branch.value = branch;
           return branch;
@@ -151,7 +156,6 @@ class HomeController extends GetxController {
     return await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           var branch = this.branch.value ?? "";
           var count = await gitHelper.outgoing(branch, path);
           this.outgoing.value = int.parse(count);
@@ -163,7 +167,6 @@ class HomeController extends GetxController {
     return await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           var branch = this.branch.value ?? "";
           var count = await gitHelper.incoming(branch, path);
           this.incoming.value = int.parse(count);
@@ -177,13 +180,12 @@ class HomeController extends GetxController {
   }
 
   void increasePatch() async {
-    var path = project.value["path"];
     var lang = project.value["lang"];
     if (lang == "flutter") {
       await flutterHelper.increaseVersion(path, patch: 1);
     } else {
       var csproj = project.value["csproj"];
-      var combine = [path, csproj].join("\\");
+      var combine = [path, csproj].join(separator);
       await dotNetHelper.increaseVersion(combine, patch: 1);
     }
 
@@ -191,13 +193,12 @@ class HomeController extends GetxController {
   }
 
   void increaseMinor() async {
-    var path = project.value["path"];
     var lang = project.value["lang"];
     if (lang == "flutter") {
       await flutterHelper.increaseVersion(path, minor: 1);
     } else {
       var csproj = project.value["csproj"];
-      var combine = [path, csproj].join("\\");
+      var combine = [path, csproj].join(separator);
       await dotNetHelper.increaseVersion(combine, minor: 1, patch: 0);
     }
 
@@ -208,14 +209,13 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           var lang = project.value["lang"];
           var file;
           if (lang == "flutter") {
-            file = [path, "pubspec.yaml"].join("\\");
+            file = [path, "pubspec.yaml"].join(separator);
           } else {
             var csproj = project.value["csproj"];
-            file = [path, csproj].join("\\");
+            file = [path, csproj].join(separator);
           }
           await gitHelper.resetVersion(file);
           await refreshProjectInfo();
@@ -226,15 +226,14 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           var lang = project.value["lang"];
           var file;
 
           if (lang == "flutter") {
-            file = [path, "pubspec.yaml"].join("\\");
+            file = [path, "pubspec.yaml"].join(separator);
           } else {
             var csproj = project.value["csproj"];
-            file = [path, csproj].join("\\");
+            file = [path, csproj].join(separator);
           }
 
           await gitHelper.commit(
@@ -250,7 +249,6 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           await gitHelper.push(
             path,
           );
@@ -262,7 +260,6 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           await gitHelper.tag(path, "$prefix-$versionNumber");
         });
   }
@@ -271,8 +268,7 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
-          await gitHelper.pushTag(path, "$prefix-$versionNumber");
+          await gitHelper.tagPush(path, "$prefix-$versionNumber");
         });
   }
 
@@ -280,7 +276,6 @@ class HomeController extends GetxController {
     await action(
         loading: ["bitbucket"],
         task: () async {
-          var path = project.value["path"];
           var url = await gitHelper.getRemoteUrl(path);
           url = url?.replaceAll(".git", "");
           var uri = Uri.parse("$url/commits/tag/$prefix-$versionNumber");
@@ -292,7 +287,6 @@ class HomeController extends GetxController {
     await action(
       loading: ["git"],
       task: () async {
-        var path = project.value["path"];
         await gitHelper.pull(path);
       },
     );
@@ -315,7 +309,6 @@ class HomeController extends GetxController {
           middleText: "Confirm reset to origin?",
           textConfirm: "Confirm",
           onConfirm: () async {
-            var path = project.value["path"];
             await gitHelper.reset(path);
             await refreshProjectInfo();
             Get.back();
@@ -337,9 +330,8 @@ class HomeController extends GetxController {
     action(
       loading: ["build"],
       task: () async {
-        var path = project.value["path"];
         var csproj = project.value["csproj"];
-        var combine = [path, csproj].join("\\");
+        var combine = [path, csproj].join(separator);
         await dotNetHelper.publish(path, profileFileName: "LocalFolder");
         await dotNetHelper.openDir(combine);
       },
@@ -350,10 +342,9 @@ class HomeController extends GetxController {
     await action(
       loading: ["build"],
       task: () async {
-        var path = project.value["path"];
         var projectName = project.value["projectName"];
         var csproj = project.value["csproj"];
-        var combine = [path, csproj].join("\\");
+        var combine = [path, csproj].join(separator);
         await dotNetHelper.publish(path, profileFileName: "DevServer");
       },
     );
@@ -363,10 +354,9 @@ class HomeController extends GetxController {
     await action(
       loading: ["build"],
       task: () async {
-        var path = project.value["path"];
         var projectName = project.value["projectName"];
         var csproj = project.value["csproj"];
-        var combine = [path, csproj].join("\\");
+        var combine = [path, csproj].join(separator);
         await dotNetHelper.copy(combine, projectName);
       },
     );
@@ -376,7 +366,6 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           await gitHelper.checkout(path, branch);
         });
     refreshProjectInfo();
@@ -386,7 +375,6 @@ class HomeController extends GetxController {
     return await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           String? output = await gitHelper.branchList(path);
           var list = output?.split('\n');
           list = list?.map((e) => e.trim()).toList();
@@ -399,7 +387,6 @@ class HomeController extends GetxController {
     await action(
         loading: ["git"],
         task: () async {
-          var path = project.value["path"];
           await gitHelper.fetch(path);
         });
     refreshProjectInfo();
