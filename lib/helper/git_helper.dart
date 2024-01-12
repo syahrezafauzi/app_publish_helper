@@ -19,6 +19,7 @@ class GitHelper {
   getBranch(String path) async {
     String? result = await cmdHelper.executeCommand(
       path,
+      silent: true,
       command: "git rev-parse --abbrev-ref HEAD",
     );
     return result;
@@ -88,6 +89,46 @@ class GitHelper {
     await cmdHelper.executeCommand(
       path,
       command: "git reset --hard @{u}",
+    );
+  }
+
+  incoming(String branch, String path) async {
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git rev-list --right-only --count $branch...origin/$branch",
+      silent: true,
+    );
+  }
+
+  outgoing(String branch, String path) async {
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git rev-list --left-only --count $branch...origin/$branch",
+      silent: true,
+    );
+  }
+
+  checkout(path, String branch) async {
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git checkout $branch",
+      silent: true,
+    );
+  }
+
+  Future<String?> branchList(String path) async {
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git branch --all --sort=committerdate --format=%(refname:short)",
+      silent: true,
+    );
+  }
+
+  fetch(path) async{
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git fetch",
+      silent: true,
     );
   }
 }

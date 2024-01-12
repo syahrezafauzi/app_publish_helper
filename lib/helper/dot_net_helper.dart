@@ -79,10 +79,10 @@ class DotNetHelper {
     }
   }
 
-  build(String path) async {
+  publish(String path, {String profileFileName = "FolderProfile"}) async {
     await cmdHelper.executeCommand(
       path,
-      command: "dotnet publish -p:PublishProfile=FolderProfile",
+      command: "dotnet publish -p:PublishProfile=${profileFileName}",
     );
   }
 

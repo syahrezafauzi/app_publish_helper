@@ -7,10 +7,12 @@ class SectionView extends StatelessWidget {
   final String? title;
   final Function? showAll;
   final List<Widget>? children;
+  final List<Widget>? actions;
   SectionView({
     this.title,
     this.showAll,
     this.children,
+    this.actions,
   });
 
   @override
@@ -24,6 +26,10 @@ class SectionView extends StatelessWidget {
             style: Get.textTheme.titleLarge
                 ?.copyWith(fontSize: 50.sp, fontWeight: FontWeight.bold),
           ),
+          if (actions != null)
+            Row(
+              children: [...actions!],
+            ),
           Spacer(),
           if (showAll != null)
             InkWell(

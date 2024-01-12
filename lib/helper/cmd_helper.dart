@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:get/get.dart';
 
-class CmdHelper{
-  
+class CmdHelper {
   final Function(String)? onOutput;
   final Function(String)? onError;
 
@@ -15,10 +14,11 @@ class CmdHelper{
     String path, {
     required String command,
     List<String>? arguments,
+    bool silent = false,
   }) async {
-    debugPrint("command path: $path");
-    debugPrint("command: $command");
-    _outputText(command);
+    // debugPrint("command path: $path");
+    // debugPrint("command: $command");
+    _outputText(command, silent: silent);
     var process = ProcessCmd(
       command,
       arguments ?? [],
@@ -26,25 +26,29 @@ class CmdHelper{
       workingDirectory: path,
     );
     var res = await runCmd(process);
-    _output(res);
+    _output(res, silent: silent);
     var result = (res.stderr.toString().isBlank ?? true)
         ? res.stdout.toString().trim()
         : null;
     return result;
   }
-  
-  void _outputText(String command) {
-    onOutput?.call(command);
+
+  void _outputText(String command, {bool silent = false}) {
+    if (!silent) {
+      onOutput?.call(command);
+    }
   }
 
-  void _output(ProcessResult res) {
-    var error = res.stderr;
-    var out = res.stdout;
-    if (error is String && !error.isEmpty) {
-      onError?.call(error.trim());
-    }
-    if (out is String && !out.isEmpty) {
-      onOutput?.call(out.trim());
+  void _output(ProcessResult res, {bool silent = false}) {
+    if (!silent) {
+      var error = res.stderr;
+      var out = res.stdout;
+      if (error is String && !error.isEmpty) {
+        onError?.call(error.trim());
+      }
+      if (out is String && !out.isEmpty) {
+        onOutput?.call(out.trim());
+      }
     }
   }
 }
