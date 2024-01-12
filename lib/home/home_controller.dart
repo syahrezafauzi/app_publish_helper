@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_updater_flutter/helper/dot_net_helper.dart';
 import 'package:app_updater_flutter/helper/flutter_helper.dart';
 import 'package:app_updater_flutter/helper/git_helper.dart';
+import 'package:app_updater_flutter/helper/melos_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -43,13 +44,15 @@ class HomeController extends GetxController {
     {
       "name": "Mobile Patient",
       "path": "D:\\projects\\mtmobile\\mtmobile-patient",
-      "path_macos": "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-patient",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-patient",
       "lang": "flutter"
     },
     {
       "name": "Mobile Staff",
       "path": "D:\\projects\\mtmobile\\mtmobile-staff",
-      "path_macos": "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
       "lang": "flutter"
     }
   ];
@@ -61,6 +64,7 @@ class HomeController extends GetxController {
   late GitHelper gitHelper;
   late DotNetHelper dotNetHelper;
   late FlutterHelper flutterHelper;
+  late MelosHelper melosHelper;
 
   var outputScroll = ScrollController();
 
@@ -69,7 +73,8 @@ class HomeController extends GetxController {
   var incoming = Rx<int?>(null);
   var outgoing = Rx<int?>(null);
 
-  get path => Platform.isMacOS ? project.value["path_macos"] : project.value["path"];
+  get path =>
+      Platform.isMacOS ? project.value["path_macos"] : project.value["path"];
   get separator => Platform.isMacOS ? "/" : "\\";
 
   bool isLoading(List<String>? category) {
@@ -94,6 +99,14 @@ class HomeController extends GetxController {
       },
     );
     flutterHelper = FlutterHelper(
+      onOutput: (p0) {
+        _printOutput(p0);
+      },
+      onError: (p0) {
+        _printOutput(p0, color: Colors.red);
+      },
+    );
+    melosHelper = MelosHelper(
       onOutput: (p0) {
         _printOutput(p0);
       },
@@ -394,5 +407,13 @@ class HomeController extends GetxController {
 
   void clearConsole() {
     output.clear();
+  }
+
+  void melosRun(String script) async {
+    await action(
+        loading: ["melos"],
+        task: () async {
+          await melosHelper.run(path, script);
+        });
   }
 }

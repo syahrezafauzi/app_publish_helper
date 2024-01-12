@@ -160,6 +160,114 @@ class HomePage extends GetView<HomeController> {
             ],
           ),
           SectionView(
+            title: "Melos",
+            children: [
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      _button(
+                        "patient:appbundle",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("patient:appbundle");
+                        },
+                      ),
+                      VerticalDivider(),
+                      _button(
+                        "patient:ipa",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("patient:ipa");
+                        },
+                      ),
+                    ],
+                  ),
+                  Divider_(),
+                  Row(
+                    children: [
+                      _button(
+                        "staff:appbundle",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("staff:appbundle");
+                        },
+                      ),
+                      VerticalDivider(),
+                      _button(
+                        "staff:ipa",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("staff:ipa");
+                        },
+                      ),
+                    ],
+                  ),
+                  Divider_(),
+                  Row(
+                    children: [
+                      _button(
+                        "pull",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("pull");
+                        },
+                      ),
+                      VerticalDivider(),
+                      _button(
+                        "pUSh",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("pUSh");
+                        },
+                      ),
+                    ],
+                  ),
+                  Divider_(),
+                  Row(
+                    children: [
+                      _button(
+                        "rEMoVe:pubspec.lock",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("rEMoVe:pubspec.lock");
+                        },
+                      ),
+                      VerticalDivider(),
+                      _button(
+                        "rEMoVe:pubspec.lock:ios",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("rEMoVe:pubspec.lock:ios");
+                        },
+                      ),
+                    ],
+                  ),
+                  Divider_(),
+                  Row(
+                    children: [
+                      _button(
+                        "get",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("get");
+                        },
+                      ),
+                      VerticalDivider(),
+                      _button(
+                        "clean",
+                        loading: ["melos"],
+                        onTap: () {
+                          controller.melosRun("clean");
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SectionView(
             title: "Bitbucket",
             children: [
               Row(
