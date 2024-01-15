@@ -2,6 +2,7 @@ import 'package:app_updater_flutter/component/divider.dart';
 import 'package:app_updater_flutter/component/sectioned_view.dart';
 import 'package:app_updater_flutter/home/home_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:styled_text/styled_text.dart';
@@ -43,47 +44,50 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Column _projectList() {
-    return Column(
-      children: [
-        SectionView(
-          title: "Website .Net",
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: controller.website.length,
-              itemBuilder: (context, index) {
-                var item = controller.website[index];
-                return InkWell(
-                  onTap: () => controller.onSelectProject(item),
-                  child: ListTile(
-                    title: Text(item["name"] ?? "project.name"),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        Divider_(),
-        SectionView(
-          title: "Mobile Flutter",
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: controller.mobile.length,
-              itemBuilder: (context, index) {
-                var item = controller.mobile[index];
-                return InkWell(
-                  onTap: () => controller.onSelectProject(item),
-                  child: ListTile(
-                    title: Text(item["name"] ?? "project.name"),
-                  ),
-                );
-              },
-            ),
-          ],
-        )
-      ],
+  Widget _projectList() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          SectionView(
+            title: "Website .Net",
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: controller.website.length,
+                itemBuilder: (context, index) {
+                  var item = controller.website[index];
+                  return InkWell(
+                    onTap: () => controller.onSelectProject(item),
+                    child: ListTile(
+                      title: Text(item["name"] ?? "project.name"),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          Divider_(),
+          SectionView(
+            title: "Mobile Flutter",
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: controller.mobile.length,
+                itemBuilder: (context, index) {
+                  var item = controller.mobile[index];
+                  return InkWell(
+                    onTap: () => controller.onSelectProject(item),
+                    child: ListTile(
+                      title: Text(item["name"] ?? "project.name"),
+                    ),
+                  );
+                },
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -99,10 +103,9 @@ class HomePage extends GetView<HomeController> {
         return Column(
           children: [
             ..._projectInfo(),
-            IntrinsicHeight(
+
+            Expanded(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _row1(),
                   VerticalDivider(),
@@ -110,6 +113,17 @@ class HomePage extends GetView<HomeController> {
                 ],
               ),
             ),
+            // IntrinsicHeight(
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.start,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       _row1(),
+            //       VerticalDivider(),
+            //       _row2(),
+            //     ],
+            //   ),
+            // ),
           ],
         );
       }
@@ -118,391 +132,415 @@ class HomePage extends GetView<HomeController> {
 
   Widget _row2() {
     return Expanded(
-      child: Column(
-        children: [
-          SectionView(
-            title: ".Net",
-            children: [
-              Column(
-                children: [
-                  Row(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            SectionView(
+              title: ".Net",
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        _button(
+                          "Publish to Local",
+                          loading: ["build"],
+                          onTap: () {
+                            controller.netPublishLocal();
+                          },
+                        ),
+                        VerticalDivider(),
+                        _button(
+                          "Copy to Clipboard",
+                          loading: ["build"],
+                          onTap: () {
+                            controller.netCopy();
+                          },
+                        ),
+                      ],
+                    ),
+                    Divider_(),
+                    Row(
+                      children: [
+                        _button(
+                          "Publish to Dev",
+                          loading: ["build"],
+                          onTap: () {
+                            controller.netPublishDev();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SectionView(
+              title: "Melos",
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _button(
-                        "Publish to Local",
-                        loading: ["build"],
-                        onTap: () {
-                          controller.netPublishLocal();
-                        },
+                      Row(
+                        children: [
+                          _button(
+                            "patient:appbundle",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("patient:appbundle");
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "patient:ipa",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("patient:ipa");
+                            },
+                          ),
+                        ],
                       ),
-                      VerticalDivider(),
-                      _button(
-                        "Copy to Clipboard",
-                        loading: ["build"],
-                        onTap: () {
-                          controller.netCopy();
-                        },
+                      Divider_(),
+                      Row(
+                        children: [
+                          _button(
+                            "staff:appbundle",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("staff:appbundle");
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "staff:ipa",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("staff:ipa");
+                            },
+                          ),
+                        ],
+                      ),
+                      Divider_(),
+                      Row(
+                        children: [
+                          _button(
+                            "pull",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("pull");
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "pUSh",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("pUSh");
+                            },
+                          ),
+                        ],
+                      ),
+                      Divider_(),
+                      Row(
+                        children: [
+                          _button(
+                            "rEMoVe:pubspec.lock",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("rEMoVe:pubspec.lock");
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "rEMoVe:pubspec.lock:ios",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("rEMoVe:pubspec.lock:ios");
+                            },
+                          ),
+                        ],
+                      ),
+                      Divider_(),
+                      Row(
+                        children: [
+                          _button(
+                            "get",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("get");
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "clean",
+                            loading: ["melos"],
+                            onTap: () {
+                              controller.melosRun("clean");
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Divider_(),
-                  Row(
-                    children: [
-                      _button(
-                        "Publish to Dev",
-                        loading: ["build"],
-                        onTap: () {
-                          controller.netPublishDev();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SectionView(
-            title: "Melos",
-            children: [
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      _button(
-                        "patient:appbundle",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("patient:appbundle");
-                        },
-                      ),
-                      VerticalDivider(),
-                      _button(
-                        "patient:ipa",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("patient:ipa");
-                        },
-                      ),
-                    ],
-                  ),
-                  Divider_(),
-                  Row(
-                    children: [
-                      _button(
-                        "staff:appbundle",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("staff:appbundle");
-                        },
-                      ),
-                      VerticalDivider(),
-                      _button(
-                        "staff:ipa",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("staff:ipa");
-                        },
-                      ),
-                    ],
-                  ),
-                  Divider_(),
-                  Row(
-                    children: [
-                      _button(
-                        "pull",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("pull");
-                        },
-                      ),
-                      VerticalDivider(),
-                      _button(
-                        "pUSh",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("pUSh");
-                        },
-                      ),
-                    ],
-                  ),
-                  Divider_(),
-                  Row(
-                    children: [
-                      _button(
-                        "rEMoVe:pubspec.lock",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("rEMoVe:pubspec.lock");
-                        },
-                      ),
-                      VerticalDivider(),
-                      _button(
-                        "rEMoVe:pubspec.lock:ios",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("rEMoVe:pubspec.lock:ios");
-                        },
-                      ),
-                    ],
-                  ),
-                  Divider_(),
-                  Row(
-                    children: [
-                      _button(
-                        "get",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("get");
-                        },
-                      ),
-                      VerticalDivider(),
-                      _button(
-                        "clean",
-                        loading: ["melos"],
-                        onTap: () {
-                          controller.melosRun("clean");
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SectionView(
-            title: "Bitbucket",
-            children: [
-              Row(
-                children: [
-                  _button(
-                    "Open ${tagName()}",
-                    loading: ["bitbucket"],
-                    onTap: () {
-                      controller.openBitbucket("PRD");
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                ),
+              ],
+            ),
+            SectionView(
+              title: "Bitbucket",
+              children: [
+                Row(
+                  children: [
+                    _button(
+                      "Open ${tagName()}",
+                      loading: ["bitbucket"],
+                      onTap: () {
+                        controller.openBitbucket("PRD");
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _row1() {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SectionView(
+              title: "Version",
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _button("Minor +1", onTap: () {
+                      controller.increaseMinor();
+                    }),
+                    VerticalDivider(),
+                    _button("Patch +1", onTap: () {
+                      controller.increasePatch();
+                    }),
+                    Spacer(),
+                    VerticalDivider(),
+                    _button(
+                      "Reset",
+                      loading: ["git"],
+                      onTap: () {
+                        controller.resetVersion();
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    _button(
+                      "Commit",
+                      loading: ["git"],
+                      onTap: () {
+                        controller.commit();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SectionView(
+              title: "Git",
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: git,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> get git {
+    return [
+      Row(
         children: [
-          SectionView(
-            title: "Version",
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _button("Minor +1", onTap: () {
-                    controller.increaseMinor();
-                  }),
-                  VerticalDivider(),
-                  _button("Patch +1", onTap: () {
-                    controller.increasePatch();
-                  }),
-                  Spacer(),
-                  VerticalDivider(),
-                  _button(
-                    "Reset",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.resetVersion();
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  _button(
-                    "Commit",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.commit();
-                    },
-                  ),
-                ],
-              ),
-            ],
+          _button(
+            "Pull",
+            loading: ["git"],
+            onTap: () {
+              controller.pull();
+            },
           ),
-          SectionView(
-            title: "Git",
-            children: [
-              Row(
-                children: [
-                  _button(
-                    "Pull",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.pull();
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "Push",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.push();
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "Fetch",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.fetch();
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  _button(
-                    "Tag ${tagName()}",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.tag("PRD");
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "Tag Push ${tagName()}",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.pushTag("PRD");
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  _button(
-                    "Reset",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.reset();
-                    },
-                  ),
-                ],
-              ),
-              Divider(),
-              Row(
-                children: [
-                  _button(
-                    "PRD",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.checkoutBranch("PRD");
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "production",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.checkoutBranch("production");
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "master",
-                    loading: ["git"],
-                    onTap: () {
-                      controller.checkoutBranch("master");
-                    },
-                  ),
-                  VerticalDivider(),
-                  _button(
-                    "...Branch",
-                    loading: ["git"],
-                    onTap: () async {
-                      var value = await controller.branchList();
-                      var list = RxList([]);
-                      list.value = value ?? [];
-                      var textController = TextEditingController();
-                      textController.addListener(() {
-                        var filter = value?.where((p0) => p0
-                            .toLowerCase()
-                            .contains(textController.text.toLowerCase()));
-                        list.value = filter?.toList() ?? [];
-                      });
-                      var focus = FocusNode();
-                      await showModalBottomSheet(
-                        context: Get.context!,
-                        builder: (context) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              SectionView(
-                                title: "Branch List",
-                                children: [
-                                  TextField(
-                                    focusNode: focus,
-                                    autofocus: true,
-                                    controller: textController,
-                                    decoration:
-                                        InputDecoration(hintText: "Search"),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Obx(() => ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: list.length,
-                                        itemBuilder: (context, index) =>
-                                            Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(children: [
-                                            _button(
-                                              "Checkout",
-                                              onTap: () async {
-                                                await controller.checkoutBranch(
-                                                    list[index]);
-                                                focus.requestFocus();
-                                              },
-                                              loading: ["git", "git-checkout"],
-                                            ),
-                                            VerticalDivider(),
-                                            Text(list[index] ?? ""),
-                                          ]),
-                                        ),
-                                      )),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                      textController.dispose();
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  _button(
-                    tagName(),
-                    loading: ["git"],
-                    onTap: () {
-                      controller.checkoutBranch(tagName());
-                    },
-                  ),
-                ],
-              ),
-            ],
+          VerticalDivider(),
+          _button(
+            "Push",
+            loading: ["git"],
+            onTap: () {
+              controller.push();
+            },
+          ),
+          VerticalDivider(),
+          _button(
+            "Fetch",
+            loading: ["git"],
+            onTap: () {
+              controller.fetch();
+            },
           ),
         ],
       ),
-    );
+      Divider_(),
+      Row(
+        children: [
+          _button(
+            "Tag ${tagName()}",
+            loading: ["git"],
+            onTap: () {
+              controller.tag("PRD");
+            },
+          ),
+          VerticalDivider(),
+          _button(
+            "Tag Push ${tagName()}",
+            loading: ["git"],
+            onTap: () {
+              controller.pushTag("PRD");
+            },
+          ),
+        ],
+      ),
+      Divider_(),
+      Row(
+        children: [
+          _button(
+            "Reset",
+            loading: ["git"],
+            onTap: () {
+              controller.reset();
+            },
+          ),
+        ],
+      ),
+      Divider(),
+      Row(
+        children: [
+          _button(
+            "PRD",
+            loading: ["git"],
+            onTap: () {
+              controller.checkoutBranch("PRD");
+            },
+          ),
+          VerticalDivider(),
+          _button(
+            "production",
+            loading: ["git"],
+            onTap: () {
+              controller.checkoutBranch("production");
+            },
+          ),
+          VerticalDivider(),
+          _button(
+            "master",
+            loading: ["git"],
+            onTap: () {
+              controller.checkoutBranch("master");
+            },
+          ),
+          VerticalDivider(),
+          _button(
+            "...Branch",
+            loading: ["git"],
+            onTap: () async {
+              var value = await controller.branchList();
+              var list = RxList([]);
+              list.value = value ?? [];
+              var textController = TextEditingController();
+              textController.addListener(() {
+                var filter = value?.where((p0) => p0
+                    .toLowerCase()
+                    .contains(textController.text.toLowerCase()));
+                list.value = filter?.toList() ?? [];
+              });
+              var focus = FocusNode();
+              await showModalBottomSheet(
+                context: Get.context!,
+                builder: (context) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      SectionView(
+                        title: "Branch List",
+                        children: [
+                          TextField(
+                            focusNode: focus,
+                            autofocus: true,
+                            controller: textController,
+                            decoration: InputDecoration(hintText: "Search"),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Obx(() => ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: list.length,
+                                itemBuilder: (context, index) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(children: [
+                                    _button(
+                                      "Checkout",
+                                      onTap: () async {
+                                        await controller
+                                            .checkoutBranch(list[index]);
+                                        focus.requestFocus();
+                                      },
+                                      loading: ["git", "git-checkout"],
+                                    ),
+                                    VerticalDivider(),
+                                    Text(list[index] ?? ""),
+                                  ]),
+                                ),
+                              )),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+              textController.dispose();
+            },
+          ),
+        ],
+      ),
+      
+      Divider_(),
+      Row(
+        children: [
+          _button(
+            tagName(),
+            loading: ["git"],
+            onTap: () {
+              controller.checkoutBranch(tagName());
+            },
+          ),
+        ],
+      ),
+    ];
   }
 
   Widget _button(
