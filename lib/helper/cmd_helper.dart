@@ -40,11 +40,11 @@ class CmdHelper {
     final output = stream(silent, (event) => onOutput?.call(event));
     final error = stream(silent, (event) => onError?.call(event));
 
-    if (!silent) {
-      env.forEach((key, value) {
-        onOutput?.call("$key: $value");
-      });
-    }
+    // if (!silent) {
+    //   env.forEach((key, value) {
+    //     onOutput?.call("$key: $value");
+    //   });
+    // }
 
     // var res = null;
 
