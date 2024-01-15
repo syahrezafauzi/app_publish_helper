@@ -100,22 +100,25 @@ class CmdHelper {
   }
 
   void resolvePath(ShellEnvironment env) {
-    var dart = "/Users/mtmhaccount/Downloads/fvm/3.10.5/bin";
-    var pubCache = "/Users/mtmhaccount/.pub-cache/bin";
-    var flutterRoot = "/Users/mtmhaccount/Downloads/fvm/3.10.5";
-    var binCache = "/Users/mtmhaccount/Downloads/fvm/3.0.5/bin/cache/dart-sdk/bin";
+    if (Platform.isMacOS) {
+      var dart = "/Users/mtmhaccount/Downloads/fvm/3.10.5/bin";
+      var pubCache = "/Users/mtmhaccount/.pub-cache/bin";
+      var flutterRoot = "/Users/mtmhaccount/Downloads/fvm/3.10.5";
+      var binCache =
+          "/Users/mtmhaccount/Downloads/fvm/3.0.5/bin/cache/dart-sdk/bin";
 
-    var paths = env.paths;
+      var paths = env.paths;
 
-    var isFlutterRoot = isAny(env, "FLUTTER_ROOT", flutterRoot);
-    var isDart = isAny(env, "PATH", dart);
-    var isPubCache = isAny(env, "PATH", pubCache);
-    var isBinCache = isAny(env, "PATH", binCache);
+      var isFlutterRoot = isAny(env, "FLUTTER_ROOT", flutterRoot);
+      var isDart = isAny(env, "PATH", dart);
+      var isPubCache = isAny(env, "PATH", pubCache);
+      var isBinCache = isAny(env, "PATH", binCache);
 
-    if (!isFlutterRoot) _addKey(env, "FLUTTER_ROOT", flutterRoot);
-    if (!isDart) _addPath(env, dart);
-    if (!isPubCache) _addPath(env, pubCache);
-    if (!isBinCache) _addPath(env, binCache);
+      if (!isFlutterRoot) _addKey(env, "FLUTTER_ROOT", flutterRoot);
+      if (!isDart) _addPath(env, dart);
+      if (!isPubCache) _addPath(env, pubCache);
+      if (!isBinCache) _addPath(env, binCache);
+    }
   }
 
   bool isAny(ShellEnvironment env, key, value) {
