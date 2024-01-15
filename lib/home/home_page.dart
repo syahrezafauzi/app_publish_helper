@@ -138,40 +138,44 @@ class HomePage extends GetView<HomeController> {
             SectionView(
               title: ".Net",
               children: [
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        _button(
-                          "Publish to Local",
-                          loading: ["build"],
-                          onTap: () {
-                            controller.netPublishLocal();
-                          },
-                        ),
-                        VerticalDivider(),
-                        _button(
-                          "Copy to Clipboard",
-                          loading: ["build"],
-                          onTap: () {
-                            controller.netCopy();
-                          },
-                        ),
-                      ],
-                    ),
-                    Divider_(),
-                    Row(
-                      children: [
-                        _button(
-                          "Publish to Dev",
-                          loading: ["build"],
-                          onTap: () {
-                            controller.netPublishDev();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _button(
+                            "Publish to Local",
+                            loading: ["build"],
+                            onTap: () {
+                              controller.netPublishLocal();
+                            },
+                          ),
+                          VerticalDivider(),
+                          _button(
+                            "Copy to Clipboard",
+                            loading: ["build"],
+                            onTap: () {
+                              controller.netCopy();
+                            },
+                          ),
+                        ],
+                      ),
+                      Divider_(),
+                      Row(
+                        children: [
+                          _button(
+                            "Publish to Dev",
+                            loading: ["build"],
+                            onTap: () {
+                              controller.netPublishDev();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -320,39 +324,13 @@ class HomePage extends GetView<HomeController> {
             SectionView(
               title: "Version",
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _button("Minor +1", onTap: () {
-                      controller.increaseMinor();
-                    }),
-                    VerticalDivider(),
-                    _button("Patch +1", onTap: () {
-                      controller.increasePatch();
-                    }),
-                    Spacer(),
-                    VerticalDivider(),
-                    _button(
-                      "Reset",
-                      loading: ["git"],
-                      onTap: () {
-                        controller.resetVersion();
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    _button(
-                      "Commit",
-                      loading: ["git"],
-                      onTap: () {
-                        controller.commit();
-                      },
-                    ),
-                  ],
-                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _version,
+                  ),
+                )
               ],
             ),
             SectionView(
@@ -371,6 +349,46 @@ class HomePage extends GetView<HomeController> {
         ),
       ),
     );
+  }
+
+  List<Widget> get _version {
+    // return [];
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _button("Minor +1", onTap: () {
+            controller.increaseMinor();
+          }),
+          VerticalDivider(),
+          _button("Patch +1", onTap: () {
+            controller.increasePatch();
+          }),
+          // Spacer(),
+          VerticalDivider(),
+          _button(
+            "Reset",
+            loading: ["git"],
+            onTap: () {
+              controller.resetVersion();
+            },
+          ),
+        ],
+      ),
+      Divider_(),
+      Row(
+        children: [
+          _button(
+            "Commit",
+            loading: ["git"],
+            onTap: () {
+              controller.commit();
+            },
+          ),
+        ],
+      ),
+    ];
   }
 
   List<Widget> get git {
@@ -526,7 +544,6 @@ class HomePage extends GetView<HomeController> {
           ),
         ],
       ),
-      
       Divider_(),
       Row(
         children: [
