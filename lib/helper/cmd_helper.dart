@@ -24,10 +24,12 @@ class CmdHelper {
     // debugPrint("command: $command");
     _outputText(command, silent: silent, arguments: arguments);
     var env = ShellEnvironment();
+    resolvePath(env);
+
     var process = ProcessCmd(
       command,
       arguments ?? [],
-      runInShell: Platform.isWindows,
+      runInShell: false,
       workingDirectory: path,
       environment: env,
       includeParentEnvironment: true,
@@ -38,11 +40,20 @@ class CmdHelper {
     final output = stream(silent, (event) => onOutput?.call(event));
     final error = stream(silent, (event) => onError?.call(event));
 
+    if (!silent) {
+      env.forEach((key, value) {
+        onOutput?.call("$key: $value");
+      });
+    }
+
+    // var res = null;
+
     var res = await runCmd(
       process,
       stdout: output?.sink,
       stderr: error?.sink,
     );
+
     output?.close();
     error?.close();
     // _output(res, silent: silent);
@@ -86,5 +97,40 @@ class CmdHelper {
     }
 
     return controller;
+  }
+
+  void resolvePath(ShellEnvironment env) {
+    var dart = "/Users/mtmhaccount/Downloads/fvm/3.10.5/bin";
+    var pubCache = "/Users/mtmhaccount/.pub-cache/bin";
+    var flutterRoot = "/Users/mtmhaccount/Downloads/fvm/3.10.5";
+    var binCache = "/Users/mtmhaccount/Downloads/fvm/3.0.5/bin/cache/dart-sdk/bin";
+
+    var paths = env.paths;
+
+    var isFlutterRoot = isAny(env, "FLUTTER_ROOT", flutterRoot);
+    var isDart = isAny(env, "PATH", dart);
+    var isPubCache = isAny(env, "PATH", pubCache);
+    var isBinCache = isAny(env, "PATH", binCache);
+
+    if (!isFlutterRoot) _addKey(env, "FLUTTER_ROOT", flutterRoot);
+    if (!isDart) _addPath(env, dart);
+    if (!isPubCache) _addPath(env, pubCache);
+    if (!isBinCache) _addPath(env, binCache);
+  }
+
+  bool isAny(ShellEnvironment env, key, value) {
+    var isKey = env.entries.any((element) => element.key == key);
+    if (!isKey) return false;
+    var isValue = env.entries
+        .any((element) => element.key == key && element.value == value);
+    return isValue;
+  }
+
+  void _addPath(ShellEnvironment env, String value) {
+    env.paths.add(value);
+  }
+
+  void _addKey(ShellEnvironment env, String key, String value) {
+    env.addAll({"$key": value});
   }
 }
