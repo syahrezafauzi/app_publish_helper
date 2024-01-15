@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -29,8 +31,18 @@ class CmdHelper {
       environment: env,
       includeParentEnvironment: true,
     );
-    var res = await runCmd(process);
-    _output(res, silent: silent);
+
+    final output = stream(silent, (event) => onOutput?.call(event));
+    final error = stream(silent, (event) => onError?.call(event));
+
+    var res = await runCmd(
+      process,
+      stdout: output?.sink,
+      stderr: error?.sink,
+    );
+    output?.close();
+    error?.close();
+    // _output(res, silent: silent);
     var result = (res.stderr.toString().isBlank ?? true)
         ? res.stdout.toString().trim()
         : null;
@@ -57,5 +69,19 @@ class CmdHelper {
         onOutput?.call(out.trim());
       }
     }
+  }
+
+  ShellLinesController? stream(bool silent, Function(dynamic event) onEvent) {
+    var controller;
+    if (!silent) {
+      controller = ShellLinesController();
+      controller.stream.listen((event) {
+        if (!silent) {
+          onEvent.call(event);
+        }
+      });
+    }
+
+    return controller;
   }
 }

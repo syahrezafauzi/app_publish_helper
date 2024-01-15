@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:app_updater_flutter/component/model/text_part_style_definition.dart';
+import 'package:app_updater_flutter/component/model/text_part_style_definitions.dart';
+import 'package:app_updater_flutter/component/styleable_text_field_controller.dart';
 import 'package:app_updater_flutter/helper/dot_net_helper.dart';
 import 'package:app_updater_flutter/helper/flutter_helper.dart';
 import 'package:app_updater_flutter/helper/git_helper.dart';
@@ -7,6 +10,7 @@ import 'package:app_updater_flutter/helper/melos_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 
@@ -60,7 +64,82 @@ class HomeController extends GetxController {
   var branch = RxnString();
   var versionNumber = RxnString();
 
-  var output = TextEditingController();
+  var outputController2 = RichTextController(
+    patternMatchMap: {
+      RegExp(r"\B#[a-zA-Z0-9]+\b"): TextStyle(color: Colors.red),
+    },
+    onMatch: (match) {},
+  );
+
+  var outputController = StyleableTextFieldController(
+    styles: TextPartStyleDefinitions(
+      definitionList: <TextPartStyleDefinition>[
+        // TextPartStyleDefinition(
+        //   style: const TextStyle(
+        //     color: Colors.green,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        //   pattern: '[\.,\?\!]',
+        // ),
+        // TextPartStyleDefinition(
+        //   style: const TextStyle(
+        //     color: Colors.red,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        //   pattern: '(?:(the|a|an) +)',
+        // ),
+        // TextPartStyleDefinition(
+        //   style: const TextStyle(
+        //     color: Colors.red,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        //   pattern: '<error>(.*?)</error>',
+        // ),
+        TextPartStyleDefinition(
+          style: TextStyle(
+            color: Colors.green,
+            fontWeight: FontWeight.normal,
+          ),
+          pattern: '\\+',
+        ),
+        TextPartStyleDefinition(
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.normal,
+          ),
+          pattern: '\\-',
+        ),
+        TextPartStyleDefinition(
+          style: TextStyle(
+            color: Colors.orange.shade200,
+            fontWeight: FontWeight.normal,
+          ),
+          pattern: 'melos run.*',
+        ),
+        TextPartStyleDefinition(
+          style: const TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+          pattern: '└> FAILED',
+        ),
+        TextPartStyleDefinition(
+          style: TextStyle(
+            color: Colors.orange.shade200,
+            fontWeight: FontWeight.bold,
+          ),
+          pattern: '└> RUNNING',
+        ),
+        TextPartStyleDefinition(
+          style: TextStyle(
+            color: Colors.lightBlue.shade200,
+            fontWeight: FontWeight.normal,
+          ),
+          pattern: '└>.*',
+        ),
+      ],
+    ),
+  );
   late GitHelper gitHelper;
   late DotNetHelper dotNetHelper;
   late FlutterHelper flutterHelper;
@@ -72,6 +151,8 @@ class HomeController extends GetxController {
 
   var incoming = Rx<int?>(null);
   var outgoing = Rx<int?>(null);
+
+  var output = Rx<String>("");
 
   get path =>
       Platform.isMacOS ? project.value["path_macos"] : project.value["path"];
@@ -119,12 +200,20 @@ class HomeController extends GetxController {
   void _printOutput(String p0, {MaterialColor? color}) {
     DateFormat format = DateFormat("HH:mm:ss");
     var date = format.format(DateTime.now());
-    output.text += "\n$date: $p0";
+    outputController.text += "\n$date: $p0";
     Future.delayed(Duration(milliseconds: 500), () {
-      output.selection =
-          TextSelection.fromPosition(TextPosition(offset: output.text.length));
+      outputController.selection = TextSelection.fromPosition(
+          TextPosition(offset: outputController.text.length));
       outputScroll.position.didEndScroll();
       outputScroll.jumpTo(outputScroll.position.maxScrollExtent);
+    });
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    outputController.addListener(() {
+      output.value = outputController.text;
     });
   }
 
@@ -406,7 +495,7 @@ class HomeController extends GetxController {
   }
 
   void clearConsole() {
-    output.clear();
+    outputController.clear();
   }
 
   void melosRun(String script) async {
