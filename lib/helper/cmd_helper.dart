@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:get/get.dart';
 import 'package:process_run/process_run.dart';
+import 'dart:convert' show utf8;
 
 class CmdHelper {
   final Function(String)? onOutput;
@@ -30,6 +31,8 @@ class CmdHelper {
       workingDirectory: path,
       environment: env,
       includeParentEnvironment: true,
+      stderrEncoding: utf8,
+      stdoutEncoding: utf8,
     );
 
     final output = stream(silent, (event) => onOutput?.call(event));
@@ -74,7 +77,7 @@ class CmdHelper {
   ShellLinesController? stream(bool silent, Function(dynamic event) onEvent) {
     var controller;
     if (!silent) {
-      controller = ShellLinesController();
+      controller = ShellLinesController(encoding: utf8);
       controller.stream.listen((event) {
         if (!silent) {
           onEvent.call(event);
