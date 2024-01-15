@@ -110,6 +110,13 @@ class HomeController extends GetxController {
         ),
         TextPartStyleDefinition(
           style: const TextStyle(
+            color: Colors.green,
+            fontWeight: FontWeight.bold,
+          ),
+          pattern: '└> SUCCESS',
+        ),
+        TextPartStyleDefinition(
+          style: const TextStyle(
             color: Colors.red,
             fontWeight: FontWeight.bold,
           ),
