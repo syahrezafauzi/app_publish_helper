@@ -10,7 +10,6 @@ import 'package:app_updater_flutter/helper/melos_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_text_controller/rich_text_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 
@@ -63,13 +62,6 @@ class HomeController extends GetxController {
   var project = Rxn();
   var branch = RxnString();
   var versionNumber = RxnString();
-
-  var outputController2 = RichTextController(
-    patternMatchMap: {
-      RegExp(r"\B#[a-zA-Z0-9]+\b"): TextStyle(color: Colors.red),
-    },
-    onMatch: (match) {},
-  );
 
   var outputController = StyleableTextFieldController(
     styles: TextPartStyleDefinitions(

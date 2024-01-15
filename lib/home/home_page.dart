@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:styled_text/styled_text.dart';
 
 class HomePage extends GetView<HomeController> {
   @override
@@ -584,19 +583,6 @@ class HomePage extends GetView<HomeController> {
           ),
         ),
       ],
-    );
-  }
-
-  Obx _styledTextField() {
-    return Obx(
-      () => StyledText(
-        text: controller.output.value,
-        style: TextStyle(fontSize: 13.sp),
-        tags: {
-          'green': StyledTextTag(style: TextStyle(color: Colors.green)),
-          'red': StyledTextTag(style: TextStyle(color: Colors.red)),
-        },
-      ),
     );
   }
 

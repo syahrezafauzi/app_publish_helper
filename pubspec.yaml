@@ -43,8 +43,6 @@ dependencies:
   intl: 
   pubspec_parse: 
   yaml_edit: 
-  styled_text: 
-  rich_text_controller: 
 
 dev_dependencies:
   flutter_test:
