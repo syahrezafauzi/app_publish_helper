@@ -307,6 +307,22 @@ class HomePage extends GetView<HomeController> {
                 ),
               ],
             ),
+            SectionView(
+              title: "Tools",
+              children: [
+                Row(
+                  children: [
+                    _button(
+                      "Print Environment",
+                      loading: ["env"],
+                      onTap: () {
+                        controller.printEnvironment();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
       ),

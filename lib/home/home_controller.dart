@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_updater_flutter/component/model/text_part_style_definition.dart';
 import 'package:app_updater_flutter/component/model/text_part_style_definitions.dart';
 import 'package:app_updater_flutter/component/styleable_text_field_controller.dart';
+import 'package:app_updater_flutter/helper/cmd_helper.dart';
 import 'package:app_updater_flutter/helper/dot_net_helper.dart';
 import 'package:app_updater_flutter/helper/flutter_helper.dart';
 import 'package:app_updater_flutter/helper/git_helper.dart';
@@ -161,8 +162,18 @@ class HomeController extends GetxController {
     return loading.any((element) => category?.contains(element) ?? false);
   }
 
+  late CmdHelper cmdHelper;
+
   HomeController() {
+    cmdHelper = CmdHelper(onOutput: (p0) {
+        _printOutput(p0);
+      },
+      onError: (p0) {
+        _printOutput(p0, color: Colors.red);
+      },);
+
     gitHelper = GitHelper(
+      cmdHelper: cmdHelper,
       onOutput: (p0) {
         _printOutput(p0);
       },
@@ -171,6 +182,7 @@ class HomeController extends GetxController {
       },
     );
     dotNetHelper = DotNetHelper(
+      cmdHelper: cmdHelper,
       onOutput: (p0) {
         _printOutput(p0);
       },
@@ -179,6 +191,7 @@ class HomeController extends GetxController {
       },
     );
     flutterHelper = FlutterHelper(
+      cmdHelper: cmdHelper,
       onOutput: (p0) {
         _printOutput(p0);
       },
@@ -187,6 +200,7 @@ class HomeController extends GetxController {
       },
     );
     melosHelper = MelosHelper(
+      cmdHelper: cmdHelper,
       onOutput: (p0) {
         _printOutput(p0);
       },
@@ -503,5 +517,14 @@ class HomeController extends GetxController {
         task: () async {
           await melosHelper.run(path, script);
         });
+  }
+
+  void printEnvironment() async {
+    await action(
+      loading: ["env"],
+      task: ()async{
+        await cmdHelper.PrintEnvironment();
+      }
+    );
   }
 }

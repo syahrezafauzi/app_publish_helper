@@ -11,6 +11,7 @@ import 'dart:convert' show utf8;
 class CmdHelper {
   final Function(String)? onOutput;
   final Function(String)? onError;
+  final env = ShellEnvironment();
 
   CmdHelper({this.onOutput, this.onError});
 
@@ -23,7 +24,6 @@ class CmdHelper {
     // debugPrint("command path: $path");
     // debugPrint("command: $command");
     _outputText(command, silent: silent, arguments: arguments);
-    var env = ShellEnvironment();
     resolvePath(env);
 
     var process = ProcessCmd(
@@ -101,11 +101,13 @@ class CmdHelper {
 
   void resolvePath(ShellEnvironment env) {
     if (Platform.isMacOS) {
-      var dart = "/Users/mtmhaccount/Downloads/fvm/3.10.5/bin";
+      var dart = "/Users/mtmhaccount/Downloads/fvm/3.0.5/bin";
       var pubCache = "/Users/mtmhaccount/.pub-cache/bin";
-      var flutterRoot = "/Users/mtmhaccount/Downloads/fvm/3.10.5";
+      var flutterRoot = "/Users/mtmhaccount/Downloads/fvm/3.0.5";
       var binCache =
           "/Users/mtmhaccount/Downloads/fvm/3.0.5/bin/cache/dart-sdk/bin";
+      var gemCache =
+          "/Users/mtmhaccount/.gem/ruby/2.6.0/bin";
 
       var paths = env.paths;
 
@@ -113,11 +115,13 @@ class CmdHelper {
       var isDart = isAny(env, "PATH", dart);
       var isPubCache = isAny(env, "PATH", pubCache);
       var isBinCache = isAny(env, "PATH", binCache);
+      var isGemCache = isAny(env, "PATH", gemCache);
 
       if (!isFlutterRoot) _addKey(env, "FLUTTER_ROOT", flutterRoot);
       if (!isDart) _addPath(env, dart);
       if (!isPubCache) _addPath(env, pubCache);
       if (!isBinCache) _addPath(env, binCache);
+      if (!isGemCache) _addPath(env, gemCache);
     }
   }
 
@@ -135,5 +139,11 @@ class CmdHelper {
 
   void _addKey(ShellEnvironment env, String key, String value) {
     env.addAll({"$key": value});
+  }
+
+  PrintEnvironment() {
+    env.forEach((key, value) {
+      onOutput?.call("$key: $value");
+    });
   }
 }

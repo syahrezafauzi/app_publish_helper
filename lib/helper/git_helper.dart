@@ -10,8 +10,8 @@ class GitHelper {
   final Function(String)? onOutput;
   final Function(String)? onError;
   final CmdHelper cmdHelper;
-  GitHelper({this.onOutput, this.onError})
-      : cmdHelper = CmdHelper(
+  GitHelper({CmdHelper? cmdHelper, this.onOutput, this.onError})
+      : cmdHelper = cmdHelper ?? CmdHelper(
           onOutput: onOutput,
           onError: onError,
         );

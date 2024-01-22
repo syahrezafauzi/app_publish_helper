@@ -4,8 +4,8 @@ class MelosHelper {
   final Function(String)? onOutput;
   final Function(String)? onError;
   final CmdHelper cmdHelper;
-  MelosHelper({this.onOutput, this.onError})
-      : cmdHelper = CmdHelper(
+  MelosHelper({CmdHelper? cmdHelper, this.onOutput, this.onError})
+      : cmdHelper = cmdHelper ?? CmdHelper(
           onOutput: onOutput,
           onError: onError,
         );
