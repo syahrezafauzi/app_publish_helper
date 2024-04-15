@@ -496,47 +496,12 @@ class HomePage extends GetView<HomeController> {
               var focus = FocusNode();
               await showModalBottomSheet(
                 context: Get.context!,
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SectionView(
-                        title: "Branch List",
-                        children: [
-                          TextField(
-                            focusNode: focus,
-                            autofocus: true,
-                            controller: textController,
-                            decoration: InputDecoration(hintText: "Search"),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Obx(() => ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: list.length,
-                                itemBuilder: (context, index) => Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(children: [
-                                    _button(
-                                      "Checkout",
-                                      onTap: () async {
-                                        await controller
-                                            .checkoutBranch(list[index]);
-                                        focus.requestFocus();
-                                      },
-                                      loading: ["git", "git-checkout"],
-                                    ),
-                                    VerticalDivider(),
-                                    Text(list[index] ?? ""),
-                                  ]),
-                                ),
-                              )),
-                        ),
-                      )
-                    ],
-                  ),
+                builder: (context) => dialogList(
+                  title: "Branch List",
+                  focus: focus,
+                  textController: textController,
+                  list: list,
+                  onSelect: (value) => controller.checkoutBranch(value),
                 ),
               );
               textController.dispose();
@@ -554,9 +519,89 @@ class HomePage extends GetView<HomeController> {
               controller.checkoutBranch(tagName());
             },
           ),
+          VerticalDivider(),
+          _button(
+            "...Tag",
+            loading: ["git"],
+            onTap: () async {
+              var value = await controller.tagList();
+              var list = RxList([]);
+              list.value = value ?? [];
+              var textController = TextEditingController();
+              textController.addListener(() {
+                var filter = value?.where((p0) => p0
+                    .toLowerCase()
+                    .contains(textController.text.toLowerCase()));
+                list.value = filter?.toList() ?? [];
+              });
+              var focus = FocusNode();
+              await showModalBottomSheet(
+                context: Get.context!,
+                builder: (context) => dialogList(
+                  title: "Tag List",
+                  focus: focus,
+                  textController: textController,
+                  list: list,
+                  onSelect: (value) => controller.checkoutBranch(value),
+                ),
+              );
+              textController.dispose();
+            },
+          )
         ],
       ),
     ];
+  }
+
+  Widget dialogList({
+    required String title,
+    required FocusNode focus,
+    required TextEditingController textController,
+    required RxList<dynamic> list,
+    required Future Function(String value) onSelect,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          SectionView(
+            title: title,
+            children: [
+              TextField(
+                focusNode: focus,
+                autofocus: true,
+                controller: textController,
+                decoration: InputDecoration(hintText: "Search"),
+              ),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Obx(() => ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(children: [
+                        _button(
+                          "Checkout",
+                          onTap: () async {
+                            await onSelect.call(list[index]);
+                            // await controller.checkoutBranch(list[index]);
+                            focus.requestFocus();
+                          },
+                          loading: ["git", "git-checkout"],
+                        ),
+                        VerticalDivider(),
+                        Text(list[index] ?? ""),
+                      ]),
+                    ),
+                  )),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _button(

@@ -57,6 +57,20 @@ class HomeController extends GetxController {
       "path_macos":
           "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
       "lang": "flutter"
+    },
+    {
+      "name": "Mobile Patient 10",
+      "path": "D:\\projects\\mtmobile10\\mtmobile-patient",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-patient",
+      "lang": "flutter"
+    },
+    {
+      "name": "Mobile Staff 10",
+      "path": "D:\\projects\\mtmobile10\\mtmobile-staff",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
+      "lang": "flutter"
     }
   ];
   var project = Rxn();
@@ -480,6 +494,18 @@ class HomeController extends GetxController {
           var list = output?.split('\n');
           list = list?.map((e) => e.trim()).toList();
           list = list?.reversed.toList();
+          return list;
+        });
+  }
+
+  Future<List<String>>? tagList() async {
+    return await action(
+        loading: ["git"],
+        task: () async {
+          String? output = await gitHelper.tagList(path);
+          var list = output?.split('\n');
+          list = list?.map((e) => e.trim()).toList();
+          list = list?.toList();
           return list;
         });
   }

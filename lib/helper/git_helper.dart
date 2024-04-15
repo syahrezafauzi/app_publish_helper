@@ -154,6 +154,18 @@ class GitHelper {
     );
   }
 
+  Future<String?> tagList(String path) async {
+    return await cmdHelper.executeCommand(
+      path,
+      command: "git",
+      arguments: [
+        "tag",
+        "--sort=-creatordate",
+      ],
+      silent: true,
+    );
+  }
+
   fetch(path) async {
     return await cmdHelper.executeCommand(
       path,
