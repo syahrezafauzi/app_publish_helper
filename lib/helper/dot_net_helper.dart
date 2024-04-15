@@ -13,8 +13,8 @@ class DotNetHelper {
   final Function(String)? onOutput;
   final Function(String)? onError;
   final CmdHelper cmdHelper;
-  DotNetHelper({this.onOutput, this.onError})
-      : cmdHelper = CmdHelper(
+  DotNetHelper({CmdHelper? cmdHelper, this.onOutput, this.onError})
+      : cmdHelper = cmdHelper ?? CmdHelper(
           onOutput: onOutput,
           onError: onError,
         );
