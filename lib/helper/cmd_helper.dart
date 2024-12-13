@@ -29,7 +29,7 @@ class CmdHelper {
     var process = ProcessCmd(
       command,
       arguments ?? [],
-      runInShell: false,
+      runInShell: true,
       workingDirectory: path,
       environment: env,
       includeParentEnvironment: true,
