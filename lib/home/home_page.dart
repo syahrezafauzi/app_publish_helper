@@ -7,6 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class HomePage extends GetView<HomeController> {
+  final TAG_PREFIX_QA = "QA";
+  final TAG_PREFIX_PRD = "PRD";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -300,7 +303,7 @@ class HomePage extends GetView<HomeController> {
                       "Open ${tagName()}",
                       loading: ["bitbucket"],
                       onTap: () {
-                        controller.openBitbucket("PRD");
+                        controller.openBitbucket(TAG_PREFIX_QA);
                       },
                     ),
                   ],
@@ -443,7 +446,7 @@ class HomePage extends GetView<HomeController> {
             "Tag ${tagName()}",
             loading: ["git"],
             onTap: () {
-              controller.tag("PRD");
+              controller.tag(TAG_PREFIX_QA);
             },
           ),
           VerticalDivider(),
@@ -451,7 +454,7 @@ class HomePage extends GetView<HomeController> {
             "Tag Push ${tagName()}",
             loading: ["git"],
             onTap: () {
-              controller.pushTag("PRD");
+              controller.pushTag(TAG_PREFIX_QA);
             },
           ),
         ],
@@ -472,10 +475,10 @@ class HomePage extends GetView<HomeController> {
       Row(
         children: [
           _button(
-            "PRD",
+            TAG_PREFIX_QA,
             loading: ["git"],
             onTap: () {
-              controller.checkoutBranch("PRD");
+              controller.checkoutBranch(TAG_PREFIX_QA);
             },
           ),
           VerticalDivider(),
@@ -716,6 +719,7 @@ class HomePage extends GetView<HomeController> {
   }
 
   tagName() {
-    return "PRD-${controller.versionNumber}";
+    var tag = controller.branch.value == "PRD" ? TAG_PREFIX_PRD : TAG_PREFIX_QA;
+    return "$tag-${controller.versionNumber}";
   }
 }

@@ -72,6 +72,26 @@ class HomeController extends GetxController {
       "path_macos":
           "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
       "lang": "flutter"
+    },
+    {
+      "name": "Mobile Patient 11",
+      "path": "D:\\projects\\mtmobile11\\mtmobile-patient",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-patient",
+      "lang": "flutter"
+    },
+    {
+      "name": "Mobile Staff 11",
+      "path": "D:\\projects\\mtmobile11\\mtmobile-staff",
+      "path_macos":
+          "/Users/mtmhaccount/Documents/mtmobile-flutter/mtmobile-staff",
+      "lang": "flutter"
+    },
+    {
+      "name": "Dashboard OT",
+      "path": "D:\\projects\\dashboard_ot",
+      "path_macos": "",
+      "lang": "flutter"
     }
   ];
   var project = Rxn();
@@ -179,12 +199,14 @@ class HomeController extends GetxController {
   late CmdHelper cmdHelper;
 
   HomeController() {
-    cmdHelper = CmdHelper(onOutput: (p0) {
+    cmdHelper = CmdHelper(
+      onOutput: (p0) {
         _printOutput(p0);
       },
       onError: (p0) {
         _printOutput(p0, color: Colors.red);
-      },);
+      },
+    );
 
     gitHelper = GitHelper(
       cmdHelper: cmdHelper,
@@ -424,7 +446,13 @@ class HomeController extends GetxController {
 
   action({required Future Function() task, List<String>? loading}) async {
     setLoading(true, loading ?? []);
-    var result = await task().onError((error, stackTrace) {});
+    var result = await task().onError((error, stackTrace) {
+      var message = error.toString();
+      if(error is ProcessException){
+        message = error.message;
+      }
+      _printOutput(message, color: Colors.red);
+    });
     setLoading(false, loading ?? []);
     return result;
   }
@@ -547,10 +575,14 @@ class HomeController extends GetxController {
 
   void printEnvironment() async {
     await action(
-      loading: ["env"],
-      task: ()async{
-        await cmdHelper.PrintEnvironment();
-      }
-    );
+        loading: ["env"],
+        task: () async {
+          await cmdHelper.PrintEnvironment();
+        });
+  }
+
+  isProd() async {
+    var branch = await gitHelper.getBranch(path);
+    return branch == "PRD";
   }
 }
